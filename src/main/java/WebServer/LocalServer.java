@@ -27,27 +27,35 @@ public class LocalServer {
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } // Wait until the authorization code is received
-    server.stop(0);
+    }
   }
 
   private class MyHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange t) throws IOException {
       String query = t.getRequestURI().getQuery();
-      // Extract the authorization code from the query string
-      // For simplicity, assuming the only query parameter is the code
-      authorizationCode = query.split("=")[1];
+      String response;
 
-      String response = "Authorization successful. You can close this window.";
+      // Check if the query string contains the authorization code
+      if (query != null && query.contains("code=")) {
+        // Extract the authorization code from the query string
+        authorizationCode = query.split("code=")[1].split("&")[0];
+
+        response = "Authorization successful. You can close this window.";
+        latch.countDown(); // Signal that the code has been received
+      } else {
+        // If the code is not present, just respond without setting the code
+        response = "No authorization code received.";
+      }
+
+      System.out.println("Hello from web server");
       t.sendResponseHeaders(200, response.length());
       OutputStream os = t.getResponseBody();
       os.write(response.getBytes());
       os.close();
-
-      latch.countDown(); // Signal that the code has been received
     }
   }
+
 
   public String getAuthorizationCode() {
     return authorizationCode;

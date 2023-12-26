@@ -19,6 +19,8 @@ public class Authorization {
   private String redirectURI = "http://localhost:8000/redirect";
   LocalServer server;
   String accessToken;
+  String refreshToken;
+
   public Authorization(LocalServer server) {
     this.server = server;
   }
@@ -28,20 +30,17 @@ public class Authorization {
    */
   public void AuthCodeFlowPKCE() {
     String codeVerifier = PKCEUtil.generateCodeVerifier();
-    String codeChallenge = this.handleGenerateCodeChallenge(codeVerifier);
-    String state = PKCEUtil.generateRandomString(16);
-    System.out.printf("codeVerifier %s ", codeVerifier);
+    String codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
     AuthorizationCodeFlowPKCE pkce = new AuthorizationCodeFlowPKCE.Builder()
-    .setClientId(this.clientID)
+        .setClientId(this.clientID)
         .setRedirectUri(this.redirectURI)
         .setResponseType("code")
         .setScopes(Arrays.asList(
           AuthorizationScope.APP_REMOTE_CONTROL,
-          AuthorizationScope.PLAYLIST_MODIFY_PRIVATE))
+          AuthorizationScope.PLAYLIST_MODIFY_PRIVATE, 
+          AuthorizationScope.STREAMING))
         .setCodeChallengeMethod("S256")
-        .setCodeChallenge(codeChallenge)
-        .setState(state)
-        .build();
+        .setCodeChallenge(codeChallenge).build();
 
     this.printUserURL(pkce);
     this.pauseUntilAuthorization();
@@ -52,40 +51,31 @@ public class Authorization {
     // in the authorization URI. If there is a mismatch then your app should reject the request and
     // stop the authentication flow.
     // TODO get state code?
-
-    this.generateAccessToken(authorizationCode, codeVerifier);
+    System.out.println(authorizationCode);
+    this.generateTokens(authorizationCode, codeVerifier);
   }
 
   public String getAccessToken() {
     return this.accessToken;
   }
 
-  private void generateAccessToken(String authCode, String codeVerifier) {
+  private void generateTokens(String authCode, String codeVerifier) {
     AuthorizationPKCERequestToken auth = new AuthorizationPKCERequestToken();
-    final String accessToken = auth.getAuthorizationCodeToken(
-            this.clientID,
-            authCode,
-            this.redirectURI,
-            codeVerifier)
-            .getAccessToken();
+    AuthorizationCodeFlowTokenResponse response =
+        auth.getAuthorizationCodeToken(this.clientID, authCode, this.redirectURI, codeVerifier);
+    this.accessToken = response.getAccessToken();
+    this.refreshToken = response.getRefreshToken();
   }
 
-  private String handleGenerateCodeChallenge(String codeVerifier) {
-    try {
-      return PKCEUtil.generateCodeChallenge(codeVerifier);
-    } catch (NoSuchAlgorithmException e) {
-      // Need to handle error here
-      e.printStackTrace();
-      return "";
-    }
-  }
+  // Below is for sake of example
 
   private void printUserURL(AuthorizationCodeFlowPKCE pkce) {
     String url = pkce.constructUrl();
-    System.out.println("-----------------------------------");
-    System.out.println("Please paste the following URL in your browser and authorize the app:");
+    url = url.replace(" ", "&");
+    System.out.println(
+        "\n--------------- Please paste the following URL in your browser and authorize the app --------------------\n");
     System.out.println(url);
-    System.out.println("-----------------------------------");
+    System.out.println("\n-----------------------------------");
   }
 
   private void pauseUntilAuthorization() {
