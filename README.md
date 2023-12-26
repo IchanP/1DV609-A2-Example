@@ -2,8 +2,5 @@
 
 ``` bash
  mvn compile
-```
-
-``` bash
-mvn exec:java
+ mvn exec:java
 ```
