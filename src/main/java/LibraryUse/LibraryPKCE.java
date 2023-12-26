@@ -7,14 +7,16 @@ import spotify.models.authorization.AuthorizationCodeFlowTokenResponse;
 import java.util.Arrays;
 import WebServer.LocalServer;
 import java.util.Map;
+import CommonPoints.AuthInfo;
+import CommonPoints.PKCEUtil;
 /**
  * Class showing examples of how to use Authorization PKCE flow using the wrapper library.
  */
-public class Authorization {
+public class LibraryPKCE {
 
   // Hardcoded for sake of example.
-  private String clientID = "cac3091070c343f0ac6e6c1f26bb43fe";
-  private String redirectURI = "http://localhost:8000/redirect";
+  private String clientID;
+  private String redirectURI;
   LocalServer server;
   String accessToken;
   String refreshToken;
@@ -22,8 +24,10 @@ public class Authorization {
   String codeVerifier;
   String codeChallenge;
 
-  public Authorization(LocalServer server) {
+  public LibraryPKCE(LocalServer server, AuthInfo authInfo) {
     this.server = server;
+    this.clientID = authInfo.getClientId();
+    this.redirectURI = authInfo.getRedirectUri();
   }
 
   public String getAccessToken() {
@@ -61,15 +65,10 @@ public class Authorization {
     this.pauseUntilAuthorization();
 
     this.authCode = server.getAuthorizationCode();
-    // In both cases, your app should compare the state parameter that it
-    // received in the redirection URI with the state parameter it originally provided to Spotify
-    // in the authorization URI. If there is a mismatch then your app should reject the request and
-    // stop the authentication flow.
-    // TODO get state code?
     this.generateTokens();
   }
 
-  public void generateTokens() {
+  private void generateTokens() {
     AuthorizationPKCERequestToken auth = new AuthorizationPKCERequestToken();
     AuthorizationCodeFlowTokenResponse response = auth.getAuthorizationCodeToken(this.clientID,
         this.authCode, this.redirectURI, this.codeVerifier);
@@ -81,7 +80,7 @@ public class Authorization {
 
   private void printUserURL(AuthorizationCodeFlowPKCE pkce) {
     String url = pkce.constructUrl();
-    url = url.replace(" ", "&");
+    url = url.replace(" ", "%20");
     System.out.println(
         "\n--------------- Please paste the following URL in your browser and authorize the app --------------------\n");
     System.out.println(url);

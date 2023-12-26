@@ -1,12 +1,14 @@
 package main;
 
 import java.io.IOException;
+import CommonPoints.AuthInfo;
 import CommonPoints.RefreshPCKE;
-import LibraryUse.Authorization;
+import LibraryUse.LibraryPKCE;
+import SpotifyAPI.DirectPKCE;
 import WebServer.LocalServer;
 import java.util.Map;
 /**
- * Hello world!
+ * Entry point.
  *
  */
 public class App {
@@ -21,11 +23,15 @@ public class App {
                 e.printStackTrace();
             }
         }).start();
-
-        Authorization auth = new Authorization(server);
-        auth.AuthCodeFlowPKCE();
-         RefreshPCKE refreshPKCE = new RefreshPCKE();
-        Map<String, String> tokens = refreshPKCE.refreshToken(auth.getRefreshToken(), auth.getClientId());
-        auth.setTokens(tokens);
+        AuthInfo authInfo = new AuthInfo("cac3091070c343f0ac6e6c1f26bb43fe", "http://localhost:8000/redirect");
+         DirectPKCE directAuth = new DirectPKCE(server, authInfo);
+        directAuth.AuthCodeFlowPKCE();
+        System.out.println(directAuth.getAccessToken());
+        System.out.println(directAuth.getRefreshToken());
+      /*    LibraryPKCE libraryAuth = new LibraryPKCE(server, authInfo);
+        libraryAuth.AuthCodeFlowPKCE();
+        RefreshPCKE refreshPKCE = new RefreshPCKE();
+        Map<String, String> tokens = refreshPKCE.refreshToken(libraryAuth.getRefreshToken(), authInfo.getClientId());
+        libraryAuth.setTokens(tokens); */
     }
 }
