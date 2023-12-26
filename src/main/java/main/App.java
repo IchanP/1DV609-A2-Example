@@ -1,10 +1,10 @@
 package main;
 
 import java.io.IOException;
+import CommonPoints.RefreshPCKE;
 import LibraryUse.Authorization;
 import WebServer.LocalServer;
-import spotify.models.authorization.AuthorizationCodeFlowTokenResponse;
-
+import java.util.Map;
 /**
  * Hello world!
  *
@@ -24,9 +24,8 @@ public class App {
 
         Authorization auth = new Authorization(server);
         auth.AuthCodeFlowPKCE();
-    /*     System.out.printf(" From auth: %s " + auth.getAccessToken());
-        AuthorizationCodeFlowTokenResponse tokenResponse = new AuthorizationCodeFlowTokenResponse();
-        System.out.printf(" From tokenResponse: %s " + tokenResponse.getAccessToken());
-        System.out.println("From tokenResponse: %s " + tokenResponse.getRefreshToken()); */
+         RefreshPCKE refreshPKCE = new RefreshPCKE();
+        Map<String, String> tokens = refreshPKCE.refreshToken(auth.getRefreshToken(), auth.getClientId());
+        auth.setTokens(tokens);
     }
 }
