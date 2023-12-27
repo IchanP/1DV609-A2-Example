@@ -1,4 +1,4 @@
-package CommonPoints;
+package CommonPoints.Authorization;
 
 public class AuthInfo {
   private String clientId;

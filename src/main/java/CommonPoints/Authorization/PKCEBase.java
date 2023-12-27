@@ -1,7 +1,9 @@
-package CommonPoints;
+package CommonPoints.Authorization;
 
 import WebServer.LocalServer;
 import java.io.IOException;
+import CommonPoints.HTTPRequester;
+import CommonPoints.TokenExtractor;
 import SpotifyAPI.AuthUrlBuilder;
 
 public abstract class PKCEBase {
@@ -45,13 +47,16 @@ public abstract class PKCEBase {
     protected void extractTokens(String response) {
         System.out.printf("BEFORE: Access token %s\n Refresh token %s\n", this.accessToken, this.refreshToken);
         TokenExtractor extractor = new TokenExtractor(response);
-        this.accessToken = extractor.getAccessToken();
-        this.refreshToken = extractor.getRefreshToken();
+
+        // Requires user to know field name. No intellisense to help.
+        this.accessToken = extractor.getStringByFieldName("access_token");
+        this.refreshToken = extractor.getStringByFieldName("refresh_token");
+
         System.out.printf("AFTER: Access token %s\n Refresh token %s\n", this.accessToken, this.refreshToken);
     }
 
 
-      // Below is for sake of example
+  // -------------------- Below is for sake of the example -----------------------------------------
 
   protected void printUserUrl(AuthUrlBuilder urlBuilder) {
     System.out.println(

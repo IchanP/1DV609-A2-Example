@@ -9,13 +9,19 @@ public class TokenExtractor {
     this.jsonString = response;
   }
 
-  public String getAccessToken() {
-    JSONObject jsonObject = new JSONObject(this.jsonString);
-    return jsonObject.getString("access_token");
+  public String getStringByFieldName(String fieldName) {
+    JSONObject json = new JSONObject(this.jsonString);
+    return json.getString(fieldName);
   }
 
-  public String getRefreshToken() {
-    JSONObject jsonObject = new JSONObject(this.jsonString);
-    return jsonObject.getString("refresh_token");
+  public int getIntByFieldName(String fieldName) {
+    JSONObject json = new JSONObject(this.jsonString);
+    return json.getInt(fieldName);
+  }
+
+  public String getNestedField(String objectName, String fieldName) {
+    JSONObject json = new JSONObject(this.jsonString);
+    JSONObject nestedObject = json.getJSONObject(objectName);
+    return nestedObject.getString(fieldName);
   }
 }

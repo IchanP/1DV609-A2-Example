@@ -1,10 +1,10 @@
 package SpotifyAPI;
 
-import CommonPoints.AuthInfo;
 import CommonPoints.HTTPRequester;
-import CommonPoints.PKCEUtil;
+import CommonPoints.Authorization.AuthInfo;
+import CommonPoints.Authorization.PKCEBase;
+import CommonPoints.Authorization.PKCEUtil;
 import WebServer.LocalServer;
-import CommonPoints.PKCEBase;
 
 public class DirectPKCE extends PKCEBase {
   private String codeVerifier;
@@ -13,7 +13,7 @@ public class DirectPKCE extends PKCEBase {
 
   public DirectPKCE(LocalServer server, AuthInfo authInfo) {
     super(server, authInfo);
-  }
+  } 
 
   public String getAccessToken() {
     return this.accessToken;

@@ -1,4 +1,4 @@
-package CommonPoints;
+package CommonPoints.Authorization;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

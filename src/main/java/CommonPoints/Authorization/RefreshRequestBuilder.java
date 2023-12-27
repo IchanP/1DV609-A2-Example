@@ -1,4 +1,4 @@
-package CommonPoints;
+package CommonPoints.Authorization;
 
 public class RefreshRequestBuilder {
   private String base_url = "https://accounts.spotify.com/api/token";

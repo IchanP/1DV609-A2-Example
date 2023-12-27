@@ -17,6 +17,7 @@ public class HTTPRequester {
     private String contentType;
     private String url;
     private String body;
+    private String authToken;
 
     public HTTPRequester(String method, String contentType, String url) {
         this.setMethod(method);
@@ -30,6 +31,10 @@ public class HTTPRequester {
         } else {
             throw new IllegalStateException("Body can only be set for POST requests");
         }
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     public String makeRequest() throws IOException {
@@ -51,15 +56,20 @@ public class HTTPRequester {
         }
         URL url = uri.toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
         connection.setRequestMethod(this.method);
         connection.setRequestProperty("Content-Type", this.contentType);
+        if (this.authToken != null && !this.authToken.isEmpty()) {
+            connection.setRequestProperty("Authorization", "Bearer " + this.authToken);
+        }
+
         return connection;
     }
 
     private void sendPostData(HttpURLConnection connection) throws IOException {
         connection.setDoOutput(true);
         try (OutputStream os = connection.getOutputStream();
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os))) {
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os))) {
             writer.write(this.body);
         }
     }
@@ -67,7 +77,8 @@ public class HTTPRequester {
     private String getResponse(HttpURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            try (BufferedReader in =
+                    new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 String inputLine;
                 StringBuilder response = new StringBuilder();
 
@@ -81,6 +92,7 @@ public class HTTPRequester {
             throw new IOException("Request failed with HTTP code: " + responseCode);
         }
     }
+
     private void setMethod(String method) {
         if (method.equals("GET") || method.equals("POST")) {
             this.method = method;

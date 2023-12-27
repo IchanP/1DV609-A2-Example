@@ -4,15 +4,11 @@ import spotify.api.authorization.AuthorizationCodeFlowPKCE;
 import spotify.api.authorization.AuthorizationPKCERequestToken;
 import spotify.api.enums.AuthorizationScope;
 import spotify.models.authorization.AuthorizationCodeFlowTokenResponse;
-import java.io.IOException;
 import java.util.Arrays;
 import WebServer.LocalServer;
-import java.util.Map;
-import CommonPoints.AuthInfo;
-import CommonPoints.HTTPRequester;
-import CommonPoints.PKCEBase;
-import CommonPoints.PKCEUtil;
-import CommonPoints.RefreshRequestBuilder;
+import CommonPoints.Authorization.AuthInfo;
+import CommonPoints.Authorization.PKCEBase;
+import CommonPoints.Authorization.PKCEUtil;
 /**
  * Class showing examples of how to use Authorization PKCE flow using the wrapper library.
  */
@@ -25,13 +21,6 @@ public class LibraryPKCE extends PKCEBase{
 
   public LibraryPKCE(LocalServer server, AuthInfo authInfo) {
     super(server, authInfo);
-  }
-
-  public void setTokens(Map<String, String> tokens) {
-    System.out.printf("BEFORE: Access token %s\n Refresh token %s\n", this.accessToken, this.refreshToken);
-    this.accessToken = tokens.get("access_token");
-    this.refreshToken = tokens.get("refresh_token");
-    System.out.printf("AFTER: Access token %s\n Refresh token %s\n", this.accessToken, this.refreshToken);
   }
 
   /**
@@ -62,6 +51,7 @@ public class LibraryPKCE extends PKCEBase{
   }
  
   // Below is for sake of example
+
   private void printUserURL(AuthorizationCodeFlowPKCE pkce) {
     String url = pkce.constructUrl();
     url = url.replace(" ", "%20");
