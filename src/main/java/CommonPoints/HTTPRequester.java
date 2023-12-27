@@ -1,4 +1,4 @@
-package SpotifyAPI;
+package CommonPoints;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -81,7 +81,6 @@ public class HTTPRequester {
             throw new IOException("Request failed with HTTP code: " + responseCode);
         }
     }
-
     private void setMethod(String method) {
         if (method.equals("GET") || method.equals("POST")) {
             this.method = method;

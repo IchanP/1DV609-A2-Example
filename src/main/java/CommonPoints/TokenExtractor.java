@@ -1,4 +1,4 @@
-package SpotifyAPI;
+package CommonPoints;
 
 import org.json.JSONObject;
 

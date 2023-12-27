@@ -4,42 +4,27 @@ import spotify.api.authorization.AuthorizationCodeFlowPKCE;
 import spotify.api.authorization.AuthorizationPKCERequestToken;
 import spotify.api.enums.AuthorizationScope;
 import spotify.models.authorization.AuthorizationCodeFlowTokenResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import WebServer.LocalServer;
 import java.util.Map;
 import CommonPoints.AuthInfo;
+import CommonPoints.HTTPRequester;
+import CommonPoints.PKCEBase;
 import CommonPoints.PKCEUtil;
+import CommonPoints.RefreshRequestBuilder;
 /**
  * Class showing examples of how to use Authorization PKCE flow using the wrapper library.
  */
-public class LibraryPKCE {
+public class LibraryPKCE extends PKCEBase{
 
   // Hardcoded for sake of example.
-  private String clientID;
-  private String redirectURI;
-  LocalServer server;
-  String accessToken;
-  String refreshToken;
   String authCode;
   String codeVerifier;
   String codeChallenge;
 
   public LibraryPKCE(LocalServer server, AuthInfo authInfo) {
-    this.server = server;
-    this.clientID = authInfo.getClientId();
-    this.redirectURI = authInfo.getRedirectUri();
-  }
-
-  public String getAccessToken() {
-    return this.accessToken;
-  }
-
-  public String getRefreshToken() {
-    return this.refreshToken;
-  }
-
-  public String getClientId() {
-    return this.clientID;
+    super(server, authInfo);
   }
 
   public void setTokens(Map<String, String> tokens) {
@@ -56,7 +41,7 @@ public class LibraryPKCE {
     this.codeVerifier = PKCEUtil.generateCodeVerifier();
     this.codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
     AuthorizationCodeFlowPKCE pkce = new AuthorizationCodeFlowPKCE.Builder()
-        .setClientId(this.clientID).setRedirectUri(this.redirectURI).setResponseType("code")
+        .setClientId(this.clientId).setRedirectUri(this.redirectUri).setResponseType("code")
         .setScopes(Arrays.asList(AuthorizationScope.APP_REMOTE_CONTROL,
             AuthorizationScope.PLAYLIST_MODIFY_PRIVATE, AuthorizationScope.STREAMING))
         .setCodeChallengeMethod("S256").setCodeChallenge(codeChallenge).build();
@@ -70,14 +55,13 @@ public class LibraryPKCE {
 
   private void generateTokens() {
     AuthorizationPKCERequestToken auth = new AuthorizationPKCERequestToken();
-    AuthorizationCodeFlowTokenResponse response = auth.getAuthorizationCodeToken(this.clientID,
-        this.authCode, this.redirectURI, this.codeVerifier);
+    AuthorizationCodeFlowTokenResponse response = auth.getAuthorizationCodeToken(this.clientId,
+        this.authCode, this.redirectUri, this.codeVerifier);
     this.accessToken = response.getAccessToken();
     this.refreshToken = response.getRefreshToken();
   }
-
+ 
   // Below is for sake of example
-
   private void printUserURL(AuthorizationCodeFlowPKCE pkce) {
     String url = pkce.constructUrl();
     url = url.replace(" ", "%20");
@@ -85,15 +69,5 @@ public class LibraryPKCE {
         "\n--------------- Please paste the following URL in your browser and authorize the app --------------------\n");
     System.out.println(url);
     System.out.println("\n-----------------------------------");
-  }
-
-  private void pauseUntilAuthorization() {
-    do {
-      try {
-        Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    } while (this.server.getAuthorizationCode() == null);
   }
 }
