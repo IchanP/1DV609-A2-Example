@@ -29,7 +29,7 @@ public class DirectPKCE extends PKCEBase {
     // Biggest difference is having to look at docs for the different scopes. There is no
     // intellisense to help.
     AuthUrlBuilder urlBuilder = new AuthUrlBuilder(this.clientId, this.redirectUri, "code", "S256",
-        codeChallenge, "", "app-remote-control playlist-modify-private streaming");
+        codeChallenge, "", "app-remote-control playlist-modify-private streaming user-read-email user-read-private");
 
 
     this.printUserUrl(urlBuilder);

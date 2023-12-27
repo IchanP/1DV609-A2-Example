@@ -6,6 +6,7 @@ import LibraryUse.LibraryPKCE;
 import LibraryUse.UseLibrary;
 import SpotifyAPI.DirectPKCE;
 import SpotifyAPI.GetArtist;
+import SpotifyAPI.GetCurrentUser;
 import WebServer.LocalServer;
 
 /**
@@ -14,6 +15,7 @@ import WebServer.LocalServer;
  */
 public class App {
     private String taylorSwiftArtistId = "06HL4z0CvFAxyc27GXpf02";
+
     public static void main(String[] args) {
         LocalServer server = new LocalServer();
 
@@ -32,18 +34,19 @@ public class App {
         App app = new App();
         // Comment out/uncomment if you want to swap between the two.
 
-         app.directAuth(server, authInfo);
+        app.directAuth(server, authInfo);
 
-      //  app.libraryAuth(server, authInfo);
+        // app.libraryAuth(server, authInfo);
     }
 
     private void libraryAuth(LocalServer server, AuthInfo authInfo) {
         LibraryPKCE libraryAuth = new LibraryPKCE(server, authInfo);
         libraryAuth.AuthCodeFlowPKCE();
         libraryAuth.refreshTokens();
-        
+
         UseLibrary library = new UseLibrary(libraryAuth.getAccessToken());
         library.getArtistFromId(taylorSwiftArtistId);
+        library.getCurrentUserProfile();
     }
 
     private void directAuth(LocalServer server, AuthInfo authInfo) {
@@ -53,5 +56,8 @@ public class App {
 
         GetArtist artist = new GetArtist(directAuth.getAccessToken());
         artist.getArtistFromId(taylorSwiftArtistId);
+
+        GetCurrentUser user = new GetCurrentUser(directAuth.getAccessToken());
+        user.getCurrentUser();
     }
 }

@@ -30,10 +30,17 @@ public class LibraryPKCE extends PKCEBase{
     this.codeVerifier = PKCEUtil.generateCodeVerifier();
     this.codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
     AuthorizationCodeFlowPKCE pkce = new AuthorizationCodeFlowPKCE.Builder()
-        .setClientId(this.clientId).setRedirectUri(this.redirectUri).setResponseType("code")
-        .setScopes(Arrays.asList(AuthorizationScope.APP_REMOTE_CONTROL,
-            AuthorizationScope.PLAYLIST_MODIFY_PRIVATE, AuthorizationScope.STREAMING))
-        .setCodeChallengeMethod("S256").setCodeChallenge(codeChallenge).build();
+        .setClientId(this.clientId)
+        .setRedirectUri(this.redirectUri)
+        .setResponseType("code")
+        .setScopes(Arrays.asList(
+          AuthorizationScope.APP_REMOTE_CONTROL,
+          AuthorizationScope.PLAYLIST_MODIFY_PRIVATE, 
+          AuthorizationScope.STREAMING,
+          AuthorizationScope.USER_READ_EMAIL,
+          AuthorizationScope.USER_READ_PRIVATE))
+        .setCodeChallengeMethod("S256")
+        .setCodeChallenge(codeChallenge).build();
 
     this.printUserURL(pkce);
     this.pauseUntilAuthorization();
